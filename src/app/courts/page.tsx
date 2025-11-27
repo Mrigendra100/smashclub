@@ -295,7 +295,7 @@ function CourtsContent() {
                                                 {[...selectedCourt.availability]
                                                     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                                                     .map((day, dayIndex) => {
-                                                        const slot = day.slots.find(s => parseInt(s.hour) === hour);
+                                                        const slot = day.slots.find(s => s.hour === hour);
                                                         const isPast = isSlotPast(day.date, timeLabel);
                                                         const isBooked = slot?.isBooked;
                                                         const isAvailable = slot && !isBooked && !isPast;
