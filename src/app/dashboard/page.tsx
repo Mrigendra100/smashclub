@@ -96,24 +96,24 @@ function DashboardContent() {
                 {/* Welcome Section */}
                 <div className="mb-8">
                     <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-                        Welcome back! 👋
+                        Welcome back, {user?.user_metadata?.name || user?.email?.split('@')[0]}! 👋
                     </h2>
                     <p className="text-gray-400">Manage your bookings and explore available courts</p>
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                    <div className="glass-effect rounded-2xl p-6 border-l-4 border-purple-500">
-                        <div className="text-purple-400 text-sm font-semibold mb-1">Active Passes</div>
-                        <div className="text-3xl font-bold text-white">{passes.length}</div>
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
+                    <div className="glass-effect rounded-xl sm:rounded-2xl p-3 sm:p-6 border-l-4 border-purple-500">
+                        <div className="text-purple-400 text-xs sm:text-sm font-semibold mb-1 truncate">Active Passes</div>
+                        <div className="text-xl sm:text-3xl font-bold text-white">{passes.length}</div>
                     </div>
-                    <div className="glass-effect rounded-2xl p-6 border-l-4 border-blue-500">
-                        <div className="text-blue-400 text-sm font-semibold mb-1">My Bookings</div>
-                        <div className="text-3xl font-bold text-white">{bookings.length}</div>
+                    <div className="glass-effect rounded-xl sm:rounded-2xl p-3 sm:p-6 border-l-4 border-blue-500">
+                        <div className="text-blue-400 text-xs sm:text-sm font-semibold mb-1 truncate">My Bookings</div>
+                        <div className="text-xl sm:text-3xl font-bold text-white">{bookings.length}</div>
                     </div>
-                    <div className="glass-effect rounded-2xl p-6 border-l-4 border-green-500">
-                        <div className="text-green-400 text-sm font-semibold mb-1">Available Courts</div>
-                        <div className="text-3xl font-bold text-white">{courts.length}</div>
+                    <div className="glass-effect rounded-xl sm:rounded-2xl p-3 sm:p-6 border-l-4 border-green-500">
+                        <div className="text-green-400 text-xs sm:text-sm font-semibold mb-1 truncate">Available Courts</div>
+                        <div className="text-xl sm:text-3xl font-bold text-white">{courts.length}</div>
                     </div>
                 </div>
 
