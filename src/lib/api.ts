@@ -29,6 +29,7 @@ export const courtsApi = {
 // Bookings API
 export const bookingsApi = {
     initiate: (data: CreateBookingDto) => api.post<BookingInitiateResponse>('/bookings/initiate', data),
+    bulkInitiate: (data: CreateBookingDto[]) => api.post<{ bookings: Booking[], order: { id: string, amount: number, currency: string }, paymentId: string }>('/bookings/bulk', data),
     verify: (data: BookingVerifyDto) => api.post<Booking>('/bookings/verify', data),
     getMy: () => api.get<Booking[]>('/bookings/my'),
     getAvailability: (courtId: string, date: string) =>
