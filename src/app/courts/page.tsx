@@ -216,7 +216,7 @@ function CourtsContent() {
                                 key={court.id}
                                 onClick={() => setSelectedCourt(court)}
                                 className={`glass-effect rounded-xl p-4 text-left transition-all ${selectedCourt?.id === court.id
-                                    ? 'border-2 border-purple-500 shadow-lg shadow-purple-500/20'
+                                    ? 'border-2 border-green-500 shadow-lg shadow-green-500/80'
                                     : 'border border-white/10 hover:border-purple-500/50'
                                     }`}
                             >

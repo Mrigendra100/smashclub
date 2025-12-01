@@ -18,21 +18,25 @@ export default function AdminDashboard() {
     const [showSingleModal, setShowSingleModal] = useState(false);
     const [showBulkModal, setShowBulkModal] = useState(false);
     const [showTodayBookings, setShowTodayBookings] = useState(false);
+
+    // Pre-filled with default values
     const [singleFormData, setSingleFormData] = useState({
-        userId: '',
-        courtId: '',
+        userId: '17a7f725-3b30-43e1-b151-a52e95e30bbe',
+        courtId: '00000000-0000-0000-0000-000000000001',
         startTime: '',
         endTime: '',
     });
+
     const [bulkFormData, setBulkFormData] = useState<BulkBookingInput>({
-        userId: '',
-        courtId: '',
+        userId: '17a7f725-3b30-43e1-b151-a52e95e30bbe',
+        courtId: '00000000-0000-0000-0000-000000000001',
         startDate: '',
         endDate: '',
         startTime: '',
         endTime: '',
         daysOfWeek: [],
     });
+
     const [bulkResult, setBulkResult] = useState<any>(null);
     const [singleLoading, setSingleLoading] = useState(false);
 
@@ -67,7 +71,12 @@ export default function AdminDashboard() {
             await adminApi.createManualBooking(singleFormData);
             alert('✅ Booking created successfully!');
             setShowSingleModal(false);
-            setSingleFormData({ userId: '', courtId: '', startTime: '', endTime: '' });
+            setSingleFormData({
+                userId: '17a7f725-3b30-43e1-b151-a52e95e30bbe',
+                courtId: '00000000-0000-0000-0000-000000000001',
+                startTime: '',
+                endTime: ''
+            });
             loadData();
         } catch (error: any) {
             console.error('Manual booking failed:', error);
@@ -155,7 +164,7 @@ export default function AdminDashboard() {
                     </button>
                 </div>
 
-                <div className="flex flex-col  sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
                     <h2 className="text-xl sm:text-2xl font-bold text-white">{showTodayBookings ? 'Today\'s Bookings' : 'All Bookings'}</h2>
                     <div className="flex flex-col sm:flex-row gap-2">
                         <button onClick={() => setShowSingleModal(true)} className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all shadow-lg active:scale-95 text-sm">
