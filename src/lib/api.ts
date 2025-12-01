@@ -48,4 +48,12 @@ export const pricingApi = {
     getRulesByCourt: (courtId: string) => api.get<PricingRule[]>(`/pricing/rules/court/${courtId}`),
 };
 
+// Users API
+export const usersApi = {
+    getMe: () => api.get<{ id: string; email: string; role: string; name?: string }>('/users/me'),
+};
+
+// Export the axios instance for use in other modules
+export const apiClient = api;
+
 export default api;
