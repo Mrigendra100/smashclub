@@ -8,6 +8,7 @@ import Link from 'next/link';
 export default function SignUpPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -20,7 +21,7 @@ export default function SignUpPage() {
         setLoading(true);
 
         try {
-            await signUp(email, password, name);
+            await signUp(email, password, name, phone);
             router.push('/dashboard');
         } catch (err: any) {
             setError(err.message || 'Failed to create account');
@@ -83,6 +84,23 @@ export default function SignUpPage() {
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                                 placeholder="you@example.com"
                             />
+                        </div>
+
+                        <div>
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
+                                Phone Number
+                            </label>
+                            <input
+                                id="phone"
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                required
+                                pattern="[0-9]{10}"
+                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                placeholder="9876543210"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">10 digit mobile number</p>
                         </div>
 
                         <div>

@@ -5,6 +5,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { courtsApi, bookingsApi } from '@/lib/api';
 import { CourtWithAvailability, TimeSlot, CreateBookingDto } from '@/types';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
 export default function CourtsPage() {
@@ -16,6 +17,7 @@ export default function CourtsPage() {
 }
 
 function CourtsContent() {
+    const { user } = useAuth();
     const [courts, setCourts] = useState<CourtWithAvailability[]>([]);
     const [selectedCourt, setSelectedCourt] = useState<CourtWithAvailability | null>(null);
     const [loading, setLoading] = useState(true);
@@ -130,9 +132,9 @@ function CourtsContent() {
                     }
                 },
                 prefill: {
-                    name: "SmashClub User",
-                    email: "user@example.com",
-                    contact: "9999999999"
+                    name: user?.user_metadata?.name || user?.email?.split('@')[0] || 'User',
+                    email: user?.email || '',
+                    contact: user?.user_metadata?.phone || ''
                 },
                 theme: {
                     color: "#9333ea"
