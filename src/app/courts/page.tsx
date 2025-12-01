@@ -98,7 +98,7 @@ function CourtsContent() {
 
             // 2. Open Razorpay Checkout
             const options = {
-                key: "rzp_test_Rko31c7YW2CGSK",
+                key: "rzp_live_RmMxLfNxbcvnFx",
                 amount: order.amount,
                 currency: order.currency,
                 name: "SmashClub",

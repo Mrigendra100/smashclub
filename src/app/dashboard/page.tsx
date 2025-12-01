@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
-import { courtsApi, bookingsApi, passesApi } from '@/lib/api';
+import { courtsApi, bookingsApi, passesApi, usersApi } from '@/lib/api';
 import { CourtWithAvailability, Booking, Pass } from '@/types';
 import Link from 'next/link';
 
@@ -23,6 +23,7 @@ function DashboardContent() {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [passes, setPasses] = useState<Pass[]>([]);
     const [loading, setLoading] = useState(true);
+    const [userRole, setUserRole] = useState<string | null>(null);
 
     useEffect(() => {
         loadData();
@@ -41,6 +42,15 @@ function DashboardContent() {
             ]);
             setBookings(bookingsRes.data);
             setPasses(passesRes.data);
+
+            // Try to fetch user role separately (non-blocking)
+            try {
+                const userRes = await usersApi.getMe();
+                setUserRole(userRes.data.role);
+            } catch (roleError: any) {
+                console.warn('Could not fetch user role:', roleError);
+                // Role will remain null, admin button won't show
+            }
         } catch (error: any) {
             console.error('Failed to load data:', error);
             // If it's an auth error, might need to re-login
@@ -80,6 +90,14 @@ function DashboardContent() {
                         </div>
                         <div className="flex items-center gap-4">
                             <span className="text-gray-300 text-sm hidden sm:inline">{user?.email}</span>
+                            {userRole === 'ADMIN' && (
+                                <Link
+                                    href="/admin"
+                                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all shadow-lg text-sm"
+                                >
+                                    Admin Dashboard
+                                </Link>
+                            )}
                             <button
                                 onClick={handleSignOut}
                                 className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 text-sm transition"
