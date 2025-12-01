@@ -16,6 +16,14 @@ export default function CourtsPage() {
     );
 }
 
+interface SelectedSlot {
+    courtId: string;
+    courtName: string;
+    date: string;
+    slot: TimeSlot;
+    price: number;
+}
+
 function CourtsContent() {
     const { user } = useAuth();
     const [courts, setCourts] = useState<CourtWithAvailability[]>([]);
@@ -23,6 +31,8 @@ function CourtsContent() {
     const [loading, setLoading] = useState(true);
     const [bookingLoading, setBookingLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
+    const [showCartDrawer, setShowCartDrawer] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -70,6 +80,142 @@ function CourtsContent() {
             month: date.toLocaleDateString('en-US', { month: 'short' }),
             weekday: date.toLocaleDateString('en-US', { weekday: 'short' })
         };
+    };
+
+    const handleSlotSelect = (slot: TimeSlot, dateStr: string) => {
+        if (!selectedCourt) return;
+
+        const slotKey = `${selectedCourt.id}-${dateStr}-${slot.startTime}`;
+        const existingIndex = selectedSlots.findIndex(
+            s => `${s.courtId}-${s.date}-${s.slot.startTime}` === slotKey
+        );
+
+        if (existingIndex >= 0) {
+            setSelectedSlots(prev => prev.filter((_, i) => i !== existingIndex));
+        } else {
+            const newSlot: SelectedSlot = {
+                courtId: selectedCourt.id,
+                courtName: selectedCourt.name,
+                date: dateStr,
+                slot,
+                price: slot.price
+            };
+            setSelectedSlots(prev => [...prev, newSlot]);
+        }
+    };
+
+    const isSlotSelected = (slot: TimeSlot, dateStr: string): boolean => {
+        if (!selectedCourt) return false;
+        const slotKey = `${selectedCourt.id}-${dateStr}-${slot.startTime}`;
+        return selectedSlots.some(
+            s => `${s.courtId}-${s.date}-${s.slot.startTime}` === slotKey
+        );
+    };
+
+    const removeSlot = (index: number) => {
+        setSelectedSlots(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const getTotalPrice = () => {
+        return selectedSlots.reduce((sum, slot) => sum + slot.price, 0);
+    };
+
+    const handleBulkCheckout = async () => {
+        if (selectedSlots.length === 0) return;
+
+        setBookingLoading(true);
+        setMessage(null);
+
+        try {
+            // Prepare booking data
+            const bookingsData = selectedSlots.map(s => {
+                const startTime = new Date(s.date);
+                const [hours, minutes] = s.slot.startTime.split(':');
+                startTime.setHours(parseInt(hours), parseInt(minutes || '0'), 0, 0);
+
+                const endTime = new Date(startTime);
+                endTime.setHours(endTime.getHours() + 1);
+
+                return {
+                    courtId: s.courtId,
+                    startTime: startTime.toISOString(),
+                    endTime: endTime.toISOString(),
+                };
+            });
+
+            // 1. Initiate Bulk Booking
+            const response = await bookingsApi.bulkInitiate(bookingsData);
+            const { bookings, order } = response.data;
+
+            // 2. Open Razorpay Checkout
+            const options = {
+                key: "rzp_live_RmMxLfNxbcvnFx",
+                amount: order.amount,
+                currency: order.currency,
+                name: "SmashClub",
+                description: `Bulk Booking (${bookings.length} slots)`,
+                order_id: order.id,
+                handler: async function (response: any) {
+                    try {
+                        // 3. Verify Payment
+                        await bookingsApi.verify({
+                            orderId: response.razorpay_order_id,
+                            paymentId: response.razorpay_payment_id,
+                            signature: response.razorpay_signature
+                        });
+
+                        setMessage({
+                            type: 'success',
+                            text: `Bulk booking confirmed! Total: ₹${order.amount / 100}`
+                        });
+
+                        setSelectedSlots([]); // Clear cart
+                        setShowCartDrawer(false);
+
+                        // Refresh courts to update availability
+                        await loadCourts();
+                        setTimeout(() => router.push('/bookings'), 2000);
+                    } catch (error) {
+                        console.error('Verification failed:', error);
+                        setMessage({
+                            type: 'error',
+                            text: 'Payment verification failed. Please contact support.'
+                        });
+                    }
+                },
+                prefill: {
+                    name: user?.user_metadata?.name || user?.email?.split('@')[0] || 'User',
+                    email: user?.email || '',
+                    contact: user?.user_metadata?.phone || ''
+                },
+                theme: {
+                    color: "#9333ea"
+                },
+                modal: {
+                    ondismiss: function () {
+                        setBookingLoading(false);
+                    }
+                }
+            };
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.on('payment.failed', function (response: any) {
+                setMessage({
+                    type: 'error',
+                    text: response.error.description || 'Payment failed'
+                });
+                setBookingLoading(false);
+            });
+            rzp.open();
+
+        } catch (error: any) {
+            console.error('Bulk booking error:', error);
+            setMessage({
+                type: 'error',
+                text: error.response?.data?.message || 'Failed to initiate bulk booking.',
+            });
+            setBookingLoading(false);
+        }
     };
 
     const handleBooking = async (slot: TimeSlot, dateStr: string) => {
@@ -306,20 +452,29 @@ function CourtsContent() {
                                                             <td key={dayIndex} className="p-2">
                                                                 {slot ? (
                                                                     <button
-                                                                        onClick={() => isAvailable && handleBooking(slot, day.date)}
-                                                                        disabled={!isAvailable || bookingLoading}
-                                                                        className={`w-full h-full min-h-[80px] rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all ${isAvailable
-                                                                            ? 'bg-green-500/10 border border-green-500/30 hover:bg-green-500/20 hover:scale-105 cursor-pointer'
-                                                                            : isBooked
-                                                                                ? 'bg-red-500/10 border border-red-500/30 text-red-400 cursor-not-allowed'
-                                                                                : 'bg-gray-800/50 border border-gray-700 text-gray-500 cursor-not-allowed'
+                                                                        onClick={() => isAvailable && handleSlotSelect(slot, day.date)}
+                                                                        disabled={!isAvailable}
+                                                                        className={`relative w-full h-full min-h-[80px] rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all ${isSlotSelected(slot, day.date)
+                                                                            ? 'bg-green-600/30 border-2 border-green-500 shadow-lg shadow-green-500/20 scale-105'
+                                                                            : isAvailable
+                                                                                ? 'bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 hover:scale-105 cursor-pointer'
+                                                                                : isBooked
+                                                                                    ? 'bg-red-500/10 border border-red-500/30 text-red-400 cursor-not-allowed'
+                                                                                    : 'bg-gray-800/50 border border-gray-700 text-gray-500 cursor-not-allowed'
                                                                             }`}
                                                                     >
-                                                                        <span className={`font-bold ${isAvailable ? 'text-green-400' : 'text-inherit'}`}>
+                                                                        {isSlotSelected(slot, day.date) && (
+                                                                            <div className="absolute top-1 right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                                                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                                                </svg>
+                                                                            </div>
+                                                                        )}
+                                                                        <span className={`font-bold ${isSlotSelected(slot, day.date) ? 'text-green-300' : isAvailable ? 'text-cyan-400' : 'text-inherit'}`}>
                                                                             ₹{slot.price}
                                                                         </span>
                                                                         <span className="text-[10px] uppercase font-bold tracking-wider">
-                                                                            {isBooked ? 'Booked' : isPast ? 'Closed' : 'Available'}
+                                                                            {isSlotSelected(slot, day.date) ? 'Selected' : isBooked ? 'Booked' : isPast ? 'Closed' : 'Tap to Select'}
                                                                         </span>
                                                                     </button>
                                                                 ) : (
@@ -346,6 +501,75 @@ function CourtsContent() {
                         </svg>
                         <h3 className="text-xl font-semibold text-white mb-2">No Courts Available</h3>
                         <p className="text-gray-400">Please check back later</p>
+                    </div>
+                )}
+
+                {/* Bottom Cart - Fixed */}
+                {selectedSlots.length > 0 && (
+                    <div className="fixed bottom-0 bg-white left-0 right-0 z-50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+                            <div className="glass-effect rounded-2xl border-2 border-green-500 shadow-2xl shadow-green-500/20">
+                                <button onClick={() => setShowCartDrawer(!showCartDrawer)} className="w-full p-4 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                                            {selectedSlots.length}
+                                        </div>
+                                        <div className="text-left flex">
+                                            <div className="text-white font-semibold">
+                                                {selectedSlots.length} Slot{selectedSlots.length > 1 ? 's' : ''} Selected
+                                            </div>
+                                            <div className="text-green-400 text-sm font-bold">
+                                                Total: ₹{getTotalPrice()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <svg className={`w-5 h-5 text-green-500 transition-transform ${showCartDrawer ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                    </svg>
+                                </button>
+
+                                {/* Cart Drawer Content */}
+                                {showCartDrawer && (
+                                    <div className="border-t border-white/10 p-4 max-h-[60vh] overflow-y-auto">
+                                        <div className="space-y-2 mb-4">
+                                            {selectedSlots.map((selectedSlot, index) => {
+                                                const formattedDate = formatDate(selectedSlot.date);
+                                                const [hours] = selectedSlot.slot.startTime.split(':');
+                                                const displayTime = new Date(`2000-01-01T${selectedSlot.slot.startTime}`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+                                                return (
+                                                    <div key={index} className="group bg-white/5 hover:bg-white/10 rounded-lg p-3 flex items-center justify-between transition">
+                                                        <div className="flex-1">
+                                                            <div className="font-semibold text-white">{selectedSlot.courtName}</div>
+                                                            <div className="text-sm text-gray-400">
+                                                                {formattedDate.weekday}, {formattedDate.day} {formattedDate.month} • {displayTime}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="text-green-400 font-bold">₹{selectedSlot.price}</div>
+                                                            <button onClick={() => removeSlot(index)} className="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 transition">
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <div className="flex gap-3 pt-4 border-t border-white/10">
+                                            <button onClick={() => setSelectedSlots([])} className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white transition">
+                                                Clear All
+                                            </button>
+                                            <button onClick={handleBulkCheckout} disabled={bookingLoading} className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold rounded-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                                {bookingLoading ? 'Processing...' : `Proceed to Pay ₹${getTotalPrice()}`}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 )}
             </main>
