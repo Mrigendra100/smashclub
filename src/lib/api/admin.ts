@@ -35,20 +35,20 @@ export interface PaginatedBookings {
 }
 
 export interface ManualBookingInput {
-    userId: string;
-    courtId: string;
+    userId?: string;
+    courtId?: string;
     startTime: string;
     endTime: string;
 }
 
 export interface BulkBookingInput {
-    userId: string;
-    courtId: string;
+    userId?: string;
+    courtId?: string;
     startDate: string;
     endDate: string;
     startTime: string;
     endTime: string;
-    daysOfWeek?: number[]; // Optional: [1,3,5] for Mon, Wed, Fri
+    daysOfWeek?: number[];
 }
 
 export interface BulkBookingResponse {
@@ -79,15 +79,30 @@ export const adminApi = {
         return response;
     },
 
-    // Create manual booking (admin only)
+    // Create manual booking (admin only) with default values
     createManualBooking: async (data: ManualBookingInput) => {
-        const response = await apiClient.post<AdminBooking>('/admin/bookings', data);
+        const bookingData = {
+            userId: data.userId || '17a7f725-3b30-43e1-b151-a52e95e30bbe',
+            courtId: data.courtId || '00000000-0000-0000-0000-000000000001',
+            startTime: data.startTime,
+            endTime: data.endTime,
+        };
+        const response = await apiClient.post<AdminBooking>('/admin/bookings', bookingData);
         return response;
     },
 
-    // Create bulk booking across multiple days (admin only)
+    // Create bulk booking across multiple days (admin only) with default values
     createBulkBooking: async (data: BulkBookingInput) => {
-        const response = await apiClient.post<BulkBookingResponse>('/admin/bookings/bulk', data);
+        const bulkData = {
+            userId: data.userId || '17a7f725-3b30-43e1-b151-a52e95e30bbe',
+            courtId: data.courtId || '00000000-0000-0000-0000-000000000001',
+            startDate: data.startDate,
+            endDate: data.endDate,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            daysOfWeek: data.daysOfWeek,
+        };
+        const response = await apiClient.post<BulkBookingResponse>('/admin/bookings/bulk', bulkData);
         return response;
     },
 };
