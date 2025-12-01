@@ -143,9 +143,12 @@ function CourtsContent() {
                 };
             });
 
+            console.log('Sending Bulk Booking Payload:', bookingsData);
+
             // 1. Initiate Bulk Booking
             const response = await bookingsApi.bulkInitiate(bookingsData);
-            const { bookings, order } = response.data;
+            console.log('Bulk Booking Response:', response.data);
+            const { order } = response.data;
 
             // 2. Open Razorpay Checkout
             const options = {
@@ -153,7 +156,7 @@ function CourtsContent() {
                 amount: order.amount,
                 currency: order.currency,
                 name: "SmashClub",
-                description: `Bulk Booking (${bookings.length} slots)`,
+                description: `Bulk Booking (${selectedSlots.length} slots)`,
                 order_id: order.id,
                 handler: async function (response: any) {
                     try {
