@@ -5,26 +5,45 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function LoginPage() {
-    const [email, setEmail] = useState('');
+export default function ResetPasswordPage() {
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState('');
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const [loading, setLoading] = useState(false);
-    const { signIn } = useAuth();
+    const { updatePassword } = useAuth();
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setMessage(null);
+
+        if (password !== confirmPassword) {
+            setMessage({ type: 'error', text: 'Passwords do not match' });
+            return;
+        }
+
+        if (password.length < 6) {
+            setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
+            return;
+        }
+
         setLoading(true);
 
         try {
-            await signIn(email, password);
-            router.push('/dashboard');
+            await updatePassword(password);
+            setMessage({
+                type: 'success',
+                text: 'Password updated successfully! Redirecting to login...'
+            });
+            setTimeout(() => {
+                router.push('/login');
+            }, 2000);
         } catch (err: any) {
-            setError(err.message || 'Failed to sign in');
-        } finally {
+            setMessage({
+                type: 'error',
+                text: err.message || 'Failed to update password'
+            });
             setLoading(false);
         }
     };
@@ -40,46 +59,26 @@ export default function LoginPage() {
             <div className="w-full max-w-md relative z-10">
                 {/* Logo/Brand */}
                 <div className="text-center mb-8">
-                    <h1 className="text-5xl font-bold text-gradient mb-2">SmashClub</h1>
-                    <p className="text-purple-300">Premium Badminton Courts</p>
+                    <h1 className="text-4xl font-bold text-gradient mb-2">SmashClub</h1>
+                    <p className="text-purple-300">Set New Password</p>
                 </div>
 
-                {/* Login Form */}
+                {/* Form */}
                 <div className="glass-effect rounded-3xl p-8 shadow-2xl">
-                    <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-                    <p className="text-gray-400 mb-6">Sign in to book your next match</p>
-
-                    {error && (
-                        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-4">
-                            {error}
+                    {message && (
+                        <div className={`border px-4 py-3 rounded-lg mb-4 ${message.type === 'success'
+                                ? 'bg-green-500/10 border-green-500/50 text-green-400'
+                                : 'bg-red-500/10 border-red-500/50 text-red-400'
+                            }`}>
+                            {message.text}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                                Email Address
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                                New Password
                             </label>
-                            <input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                                placeholder="you@example.com"
-                            />
-                        </div>
-
-                        <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-                                    Password
-                                </label>
-                                <Link href="/forgot-password" className="text-sm text-purple-400 hover:text-purple-300 transition">
-                                    Forgot Password?
-                                </Link>
-                            </div>
                             <div className="relative">
                                 <input
                                     id="password"
@@ -109,29 +108,30 @@ export default function LoginPage() {
                             </div>
                         </div>
 
+                        <div>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                                Confirm Password
+                            </label>
+                            <input
+                                id="confirmPassword"
+                                type={showPassword ? 'text' : 'password'}
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                placeholder="••••••••"
+                            />
+                        </div>
+
                         <button
                             type="submit"
                             disabled={loading}
                             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/50"
                         >
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {loading ? 'Updating...' : 'Update Password'}
                         </button>
                     </form>
-
-                    <div className="mt-6 text-center">
-                        <p className="text-gray-400">
-                            Don't have an account?{' '}
-                            <Link href="/signup" className="text-purple-400 hover:text-purple-300 font-semibold transition">
-                                Sign up
-                            </Link>
-                        </p>
-                    </div>
                 </div>
-
-                {/* Footer */}
-                <p className="text-center text-gray-500 text-sm mt-8">
-                    © 2024 SmashClub. All rights reserved.
-                </p>
             </div>
         </div>
     );
