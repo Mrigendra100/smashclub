@@ -72,22 +72,24 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-white mb-1">Email</h3>
-                                    <p className="text-gray-400">support@smashclub.com</p>
+                                    <p className="text-gray-400">bhaveshch250198@gmail.com</p>
                                     <p className="text-sm text-gray-500 mt-1">We reply within 24 hours</p>
                                 </div>
                             </div>
 
                             <div className="glass-effect p-6 rounded-2xl border border-white/10 flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                                    <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
+                                <a href="https://www.google.com/maps/dir//Plot+No-+821,+Shalimar+Garden+Extension+I,+Block+C,+Pasonda,+Sahibabad,+Ghaziabad,+Uttar+Pradesh+201005/@12.9614549,77.7108679,15z/data=!4m8!4m7!1m0!1m5!1m1!1s0x390cfbdfd89de783:0x3ec5c9aad7447c84!2m2!1d77.34142!2d28.686062?entry=ttu&g_ep=EgoyMDI1MTEyMy4xIKXMDSoASAFQAw%3D%3D">
+                                    <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                                        <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </div>
+                                </a>
                                 <div>
                                     <h3 className="text-lg font-semibold text-white mb-1">Location</h3>
-                                    <p className="text-gray-400">SmashClub Arena</p>
-                                    <p className="text-sm text-gray-500 mt-1">123 Sports Complex, Tech City</p>
+                                    <p className="text-gray-400">Plot No- 821, </p>
+                                    <p className="text-sm text-gray-500 mt-1">Shalimar Garden Extension I, Block C, Pasonda, Sahibabad, Ghaziabad, Uttar Pradesh 201005</p>
                                 </div>
                             </div>
                         </div>

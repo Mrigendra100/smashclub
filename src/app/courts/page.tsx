@@ -359,12 +359,12 @@ function CourtsContent() {
                 {/* Court Selection */}
                 <div className="mb-8">
                     <h2 className="text-xl font-bold text-white mb-4">Select Court</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="flex flex-wrap gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
                         {courts.map((court) => (
                             <button
                                 key={court.id}
                                 onClick={() => setSelectedCourt(court)}
-                                className={`glass-effect rounded-xl p-4 text-left transition-all ${selectedCourt?.id === court.id
+                                className={`flex-1 min-w-[100px] sm:w-auto glass-effect rounded-xl p-2 sm:p-4 text-left transition-all ${selectedCourt?.id === court.id
                                     ? 'border-2 border-green-500 shadow-lg shadow-green-500/80'
                                     : 'border border-white/10 hover:border-purple-500/50'
                                     }`}
@@ -388,7 +388,7 @@ function CourtsContent() {
 
                 {/* Weekly Availability Matrix */}
                 {selectedCourt && (
-                    <div className="glass-effect rounded-2xl p-6 overflow-hidden">
+                    <div className="glass-effect rounded-2xl p-3 sm:p-6 overflow-hidden">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
                                 <h2 className="text-xl font-bold text-white">Availability Schedule</h2>
@@ -414,10 +414,10 @@ function CourtsContent() {
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="w-full border-collapse min-w-[800px]">
+                            <table className="w-full border-collapse min-w-[500px] sm:min-w-[800px]">
                                 <thead>
                                     <tr>
-                                        <th className="p-4 text-left text-gray-400 font-medium border-b border-white/10 sticky left-0 bg-[#0f172a] z-10 w-24">
+                                        <th className="p-2 sm:p-4 text-left text-gray-400 font-medium border-b border-white/10 sticky left-0 bg-[#0f172a] z-10 w-20 sm:w-24 text-xs sm:text-base">
                                             Time
                                         </th>
                                         {[...selectedCourt.availability]
@@ -425,9 +425,9 @@ function CourtsContent() {
                                             .map((day, index) => {
                                                 const { day: d, weekday } = formatDate(day.date);
                                                 return (
-                                                    <th key={index} className="p-4 text-center border-b border-white/10 min-w-[120px]">
-                                                        <div className="text-purple-400 font-bold">{weekday}</div>
-                                                        <div className="text-2xl text-white font-bold">{d}</div>
+                                                    <th key={index} className="p-2 sm:p-4 text-center border-b border-white/10 min-w-[70px] sm:min-w-[120px]">
+                                                        <div className="text-purple-400 font-bold text-xs sm:text-base">{weekday}</div>
+                                                        <div className="text-lg sm:text-2xl text-white font-bold">{d}</div>
                                                     </th>
                                                 );
                                             })}
@@ -440,7 +440,7 @@ function CourtsContent() {
 
                                         return (
                                             <tr key={hour} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                                <td className="p-4 text-gray-400 font-medium sticky left-0 bg-[#0f172a] z-10 border-r border-white/10">
+                                                <td className="p-2 sm:p-4 text-gray-400 font-medium sticky left-0 bg-[#0f172a] z-10 border-r border-white/10 text-xs sm:text-base">
                                                     {displayTime}
                                                 </td>
                                                 {[...selectedCourt.availability]
@@ -452,12 +452,12 @@ function CourtsContent() {
                                                         const isAvailable = slot && !isBooked && !isPast;
 
                                                         return (
-                                                            <td key={dayIndex} className="p-2">
+                                                            <td key={dayIndex} className="p-1 sm:p-2">
                                                                 {slot ? (
                                                                     <button
                                                                         onClick={() => isAvailable && handleSlotSelect(slot, day.date)}
                                                                         disabled={!isAvailable}
-                                                                        className={`relative w-full h-full min-h-[80px] rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all ${isSlotSelected(slot, day.date)
+                                                                        className={`relative w-full h-full min-h-[50px] sm:min-h-[80px] rounded-lg p-1 sm:p-2 flex flex-col items-center justify-center gap-1 transition-all ${isSlotSelected(slot, day.date)
                                                                             ? 'bg-green-600/30 border-2 border-green-500 shadow-lg shadow-green-500/20 scale-105'
                                                                             : isAvailable
                                                                                 ? 'bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 hover:scale-105 cursor-pointer'
@@ -467,17 +467,17 @@ function CourtsContent() {
                                                                             }`}
                                                                     >
                                                                         {isSlotSelected(slot, day.date) && (
-                                                                            <div className="absolute top-1 right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                                                                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <div className="absolute top-1 right-1 w-3 h-3 sm:w-5 sm:h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                                                                <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                                                 </svg>
                                                                             </div>
                                                                         )}
-                                                                        <span className={`font-bold ${isSlotSelected(slot, day.date) ? 'text-green-300' : isAvailable ? 'text-cyan-400' : 'text-inherit'}`}>
+                                                                        <span className={`font-bold text-sm sm:text-base ${isSlotSelected(slot, day.date) ? 'text-green-300' : isAvailable ? 'text-cyan-400' : 'text-inherit'}`}>
                                                                             ₹{slot.price}
                                                                         </span>
-                                                                        <span className="text-[10px] uppercase font-bold tracking-wider">
-                                                                            {isSlotSelected(slot, day.date) ? 'Selected' : isBooked ? 'Booked' : isPast ? 'Closed' : 'Tap to Select'}
+                                                                        <span className="text-[8px] sm:text-[10px] uppercase font-bold tracking-wider">
+                                                                            {isSlotSelected(slot, day.date) ? 'Selected' : isBooked ? 'Booked' : isPast ? 'Closed' : 'Tap'}
                                                                         </span>
                                                                     </button>
                                                                 ) : (
