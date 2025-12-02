@@ -182,7 +182,7 @@ function PassesContent() {
                                 </div>
 
                                 <div className="mb-6">
-                                    <div className="text-5xl font-bold text-gradient mb-2">₹999</div>
+                                    <div className="text-5xl font-bold text-gradient mb-2">₹9,999</div>
                                     <p className="text-gray-500 text-sm">Valid for 30 days</p>
                                 </div>
 
@@ -208,11 +208,11 @@ function PassesContent() {
                                 </ul>
 
                                 <button
-                                    onClick={() => handlePurchase('MONTHLY')}
+                                    // onClick={() => handlePurchase('MONTHLY')}
                                     disabled={purchaseLoading}
-                                    className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/50"
+                                    className="w-full cursor-not-allowed py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/50"
                                 >
-                                    Purchase Monthly
+                                    Coming Soon
                                 </button>
                             </div>
                         </div>
@@ -226,13 +226,13 @@ function PassesContent() {
 
                             <div className="relative">
                                 <div className="mb-6">
-                                    <h3 className="text-2xl font-bold text-white mb-2">Yearly Pass</h3>
-                                    <p className="text-gray-400 text-sm">Save 40% with annual membership</p>
+                                    <h3 className="text-2xl font-bold text-white mb-2">Quarterly Pass</h3>
+                                    <p className="text-gray-400 text-sm">Save 40% with Quarterly membership</p>
                                 </div>
 
                                 <div className="mb-6">
-                                    <div className="text-5xl font-bold text-gradient mb-2">₹5,999</div>
-                                    <p className="text-gray-500 text-sm">Valid for 365 days</p>
+                                    <div className="text-5xl font-bold text-gradient mb-2">₹34,999</div>
+                                    <p className="text-gray-500 text-sm">Valid for 90 days</p>
                                 </div>
 
                                 <ul className="space-y-3 mb-8">
@@ -257,11 +257,11 @@ function PassesContent() {
                                 </ul>
 
                                 <button
-                                    onClick={() => handlePurchase('YEARLY')}
+                                    // onClick={() => handlePurchase('YEARLY')}
                                     disabled={purchaseLoading}
-                                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/50"
+                                    className="w-full cursor-not-allowed py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/50"
                                 >
-                                    Purchase Yearly
+                                    Coming Soon
                                 </button>
                             </div>
                         </div>
