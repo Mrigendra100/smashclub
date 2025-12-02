@@ -113,8 +113,8 @@ function DashboardContent() {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Welcome Section */}
                 <div className="mb-8">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-                        Welcome back, {user?.user_metadata?.name || user?.email?.split('@')[0]}! 👋
+                    <h2 className="text-2xl sm:text-4xl font-bold text-white mb-2">
+                        Welcome back, {user?.user_metadata?.name || user?.email?.split('@')[0]}!
                     </h2>
                     <p className="text-gray-400">Manage your bookings and explore available courts</p>
                 </div>
@@ -130,50 +130,51 @@ function DashboardContent() {
                         <div className="text-xl sm:text-3xl font-bold text-white">{bookings.length}</div>
                     </div>
                     <div className="glass-effect rounded-xl sm:rounded-2xl p-3 sm:p-6 border-l-4 border-green-500">
-                        <div className="text-green-400 text-xs sm:text-sm font-semibold mb-1 truncate">Available Courts</div>
+                        <div className="text-green-400 text-xs sm:text-sm font-semibold mb-1 truncate">Total Courts</div>
                         <div className="text-xl sm:text-3xl font-bold text-white">{courts.length}</div>
                     </div>
                 </div>
 
                 {/* Quick Actions */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {/* Quick Actions */}
+                <div className="flex flex-wrap gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 mb-8">
                     <Link
                         href="/courts"
-                        className="glass-effect rounded-2xl p-6 hover:scale-[1.02] transition-transform cursor-pointer group"
+                        className="w-[calc(50%-6px)] sm:w-auto glass-effect rounded-xl sm:rounded-2xl p-3 sm:p-6 hover:scale-[1.02] transition-transform cursor-pointer group"
                     >
-                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-4 group-hover:scale-110 transition-transform">
+                            <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">Browse Courts</h3>
-                        <p className="text-gray-400 text-sm">Explore and book available courts</p>
+                        <h3 className="text-sm sm:text-xl font-bold text-white mb-1 sm:mb-2">Browse Courts</h3>
+                        <p className="text-gray-400 text-xs sm:text-sm">Explore and book available courts</p>
                     </Link>
 
                     <Link
                         href="/bookings"
-                        className="glass-effect rounded-2xl p-6 hover:scale-[1.02] transition-transform cursor-pointer group"
+                        className="w-[calc(50%-6px)] sm:w-auto glass-effect rounded-xl sm:rounded-2xl p-3 sm:p-6 hover:scale-[1.02] transition-transform cursor-pointer group"
                     >
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-4 group-hover:scale-110 transition-transform">
+                            <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">My Bookings</h3>
-                        <p className="text-gray-400 text-sm">View and manage your bookings</p>
+                        <h3 className="text-sm sm:text-xl font-bold text-white mb-1 sm:mb-2">My Bookings</h3>
+                        <p className="text-gray-400 text-xs sm:text-sm">View and manage your bookings</p>
                     </Link>
 
                     <Link
                         href="/passes"
-                        className="glass-effect rounded-2xl p-6 hover:scale-[1.02] transition-transform cursor-pointer group"
+                        className="w-[calc(50%-6px)] sm:w-auto glass-effect rounded-xl sm:rounded-2xl p-3 sm:p-6 hover:scale-[1.02] transition-transform cursor-pointer group"
                     >
-                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-4 group-hover:scale-110 transition-transform">
+                            <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                             </svg>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">My Passes</h3>
-                        <p className="text-gray-400 text-sm">Manage your membership passes</p>
+                        <h3 className="text-sm sm:text-xl font-bold text-white mb-1 sm:mb-2">My Passes</h3>
+                        <p className="text-gray-400 text-xs sm:text-sm">Manage your membership passes</p>
                     </Link>
                 </div>
 
