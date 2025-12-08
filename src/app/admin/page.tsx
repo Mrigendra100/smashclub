@@ -7,7 +7,7 @@ import { adminApi, AdminStats, AdminBooking, BulkBookingInput } from '@/lib/api/
 import Link from 'next/link';
 
 export default function AdminDashboard() {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [bookings, setBookings] = useState<AdminBooking[]>([]);
@@ -41,8 +41,10 @@ export default function AdminDashboard() {
     const [singleLoading, setSingleLoading] = useState(false);
 
     useEffect(() => {
-        loadData();
-    }, [page]);
+        if (!authLoading) {
+            loadData();
+        }
+    }, [page, authLoading]);
 
     const loadData = async () => {
         try {
@@ -107,7 +109,7 @@ export default function AdminDashboard() {
         }));
     };
 
-    if (loading && !stats) {
+    if ((loading || authLoading) && !stats) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
                 <div className="flex flex-col items-center gap-4">
@@ -205,8 +207,8 @@ export default function AdminDashboard() {
                                         <td className="p-4 text-white font-semibold">₹{booking.totalPrice}</td>
                                         <td className="p-4">
                                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking.status === 'CONFIRMED' ? 'bg-green-500/20 text-green-400' :
-                                                    booking.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                        'bg-red-500/20 text-red-400'
+                                                booking.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                    'bg-red-500/20 text-red-400'
                                                 }`}>
                                                 {booking.status}
                                             </span>
@@ -226,8 +228,8 @@ export default function AdminDashboard() {
                                         <div className="text-sm text-gray-400">{booking.user.email}</div>
                                     </div>
                                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${booking.status === 'CONFIRMED' ? 'bg-green-500/20 text-green-400' :
-                                            booking.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                'bg-red-500/20 text-red-400'
+                                        booking.status === 'PENDING' ? 'bg-yellow-500/20 text-yellow-400' :
+                                            'bg-red-500/20 text-red-400'
                                         }`}>
                                         {booking.status}
                                     </span>
