@@ -26,8 +26,10 @@ function DashboardContent() {
     const [userRole, setUserRole] = useState<string | null>(null);
 
     useEffect(() => {
-        loadData();
-    }, []);
+        if (user) {
+            loadData();
+        }
+    }, [user]);
 
     const loadData = async () => {
         try {
