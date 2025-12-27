@@ -3,16 +3,17 @@
 @layer base {
   body {
     font-feature-settings: "rlig" 1, "calt" 1;
-    @apply bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white min-h-screen;
+    @apply bg-slate-50 text-slate-900 min-h-screen;
   }
 }
 
 @layer utilities {
   .glass-effect {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.375);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(8, 240, 93, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(255, 8, 8, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .gradient-border {
@@ -25,7 +26,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, #a855f7, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, #15803d, #22c55e, #16a34a);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -51,7 +52,7 @@
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #a855f7, #8b5cf6, #7c3aed);
+    background: linear-gradient(135deg, #15803d, #16a34a, #22c55e);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
