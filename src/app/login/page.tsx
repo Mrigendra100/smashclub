@@ -30,34 +30,34 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-rich-white p-4">
             {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-court-light/50 rounded-full blur-3xl opacity-60"></div>
+                <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-court-light/50 rounded-full blur-3xl opacity-60"></div>
             </div>
 
             <div className="w-full max-w-md relative z-10">
                 {/* Logo/Brand */}
                 <div className="text-center mb-8">
-                    <h1 className="text-5xl font-bold text-gradient mb-2">SmashClub</h1>
-                    <p className="text-purple-300">Premium Badminton Courts</p>
+                    <h1 className="text-5xl font-bold text-court-deep mb-2">SmashClub</h1>
+                    <p className="text-slate-500">Premium Badminton Courts</p>
                 </div>
 
                 {/* Login Form */}
-                <div className="glass-effect rounded-3xl p-8 shadow-2xl">
-                    <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-                    <p className="text-gray-400 mb-6">Sign in to book your next match</p>
+                <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100">
+                    <h2 className="text-3xl font-bold text-slate-800 mb-2">Welcome Back</h2>
+                    <p className="text-slate-400 mb-6">Sign in to book your next match</p>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-4">
+                        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
                             {error}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                                 Email Address
                             </label>
                             <input
@@ -66,17 +66,17 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-court-green focus:border-transparent transition"
                                 placeholder="you@example.com"
                             />
                         </div>
 
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+                                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
                                     Password
                                 </label>
-                                <Link href="/forgot-password" className="text-sm text-purple-400 hover:text-purple-300 transition">
+                                <Link href="/forgot-password" className="text-sm text-court-green hover:text-court-deep transition">
                                     Forgot Password?
                                 </Link>
                             </div>
@@ -87,13 +87,13 @@ export default function LoginPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition pr-12"
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-court-green focus:border-transparent transition pr-12"
                                     placeholder="••••••••"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-600 transition"
                                 >
                                     {showPassword ? (
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,16 +112,16 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/50"
+                            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/20"
                         >
                             {loading ? 'Signing in...' : 'Sign In'}
                         </button>
                     </form>
 
                     <div className="mt-6 text-center">
-                        <p className="text-gray-400">
+                        <p className="text-slate-500">
                             Don't have an account?{' '}
-                            <Link href="/signup" className="text-purple-400 hover:text-purple-300 font-semibold transition">
+                            <Link href="/signup" className="text-court-green hover:text-court-deep font-semibold transition">
                                 Sign up
                             </Link>
                         </p>
@@ -129,7 +129,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Footer */}
-                <p className="text-center text-gray-500 text-sm mt-8">
+                <p className="text-center text-slate-400 text-sm mt-8">
                     © 2024 SmashClub. All rights reserved.
                 </p>
             </div>

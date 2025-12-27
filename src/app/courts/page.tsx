@@ -317,10 +317,10 @@ function CourtsContent() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+            <div className="min-h-screen flex items-center justify-center bg-rich-white">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-purple-300 font-medium">Loading courts...</p>
+                    <div className="w-12 h-12 border-4 border-court-green border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-court-deep font-medium">Loading courts...</p>
                 </div>
             </div>
         );
@@ -330,17 +330,17 @@ function CourtsContent() {
     const operatingHours = Array.from({ length: 19 }, (_, i) => i + 5);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+        <div className="min-h-screen bg-rich-white pb-24">
             {/* Header */}
-            <header className="glass-effect border-b border-white/10">
+            <header className="glass-effect border-b border-slate-200 sticky top-0 z-40 bg-white/80">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <Link href="/dashboard" className="flex items-center gap-3 group">
-                            <svg className="w-6 h-6 text-purple-400 group-hover:text-purple-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6 text-court-green group-hover:text-court-deep transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            <img src="/logo.png" alt="SmashClub Logo" className="w-8 h-8 rounded-full object-cover border-2 border-purple-500/50 bg-white" />
-                            <h1 className="text-2xl sm:text-3xl font-bold text-gradient">Browse Courts</h1>
+                            <img src="/logo.png" alt="SmashClub Logo" className="w-8 h-8 rounded-full object-cover border-2 border-court-green/50 bg-white" />
+                            <h1 className="text-2xl sm:text-3xl font-bold text-court-deep">Browse Courts</h1>
                         </Link>
                     </div>
                 </div>
@@ -348,9 +348,9 @@ function CourtsContent() {
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {message && (
-                    <div className={`mb-6 p-4 rounded-lg ${message.type === 'success'
-                        ? 'bg-green-500/10 border border-green-500/50 text-green-400'
-                        : 'bg-red-500/10 border border-red-500/50 text-red-400'
+                    <div className={`mb-6 p-4 rounded-lg border ${message.type === 'success'
+                        ? 'bg-green-50 border-green-200 text-green-700'
+                        : 'bg-red-50 border-red-200 text-red-700'
                         }`}>
                         {message.text}
                     </div>
@@ -358,28 +358,28 @@ function CourtsContent() {
 
                 {/* Court Selection */}
                 <div className="mb-8">
-                    <h2 className="text-xl font-bold text-white mb-4">Select Court</h2>
+                    <h2 className="text-xl font-bold text-slate-800 mb-4">Select Court</h2>
                     <div className="flex flex-wrap gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
                         {courts.map((court) => (
                             <button
                                 key={court.id}
                                 onClick={() => setSelectedCourt(court)}
-                                className={`flex-1 min-w-[100px] sm:w-auto glass-effect rounded-xl p-2 sm:p-4 text-left transition-all ${selectedCourt?.id === court.id
-                                    ? 'border-2 border-green-500 shadow-lg shadow-green-500/80'
-                                    : 'border border-white/10 hover:border-purple-500/50'
+                                className={`flex-1 min-w-[100px] sm:w-auto rounded-xl p-2 sm:p-4 text-left transition-all ${selectedCourt?.id === court.id
+                                    ? 'border-2 border-green-600 bg-green-600 shadow-lg shadow-green-300 scale-[1.02]'
+                                    : 'glass-effect border border-slate-200 bg-white hover:border-green-400 hover:bg-slate-50'
                                     }`}
                             >
                                 <div className="flex items-center justify-between mb-2">
-                                    <h3 className="font-bold text-white">{court.name}</h3>
+                                    <h3 className={`font-bold ${selectedCourt?.id === court.id ? 'text-white' : 'text-slate-900'}`}>{court.name}</h3>
                                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${court.type === 'SINGLE'
-                                        ? 'bg-blue-500/20 text-blue-400'
-                                        : 'bg-purple-500/20 text-purple-400'
+                                        ? 'bg-blue-100 text-blue-700'
+                                        : 'bg-green-100 text-green-700'
                                         }`}>
                                         {court.type}
                                     </span>
                                 </div>
-                                <div className="text-sm text-gray-400">
-                                    Base Rate: <span className="text-purple-400 font-semibold">₹{court.baseRate}</span>
+                                <div className={`text-sm ${selectedCourt?.id === court.id ? 'text-white' : 'text-slate-500'}`}>
+                                    Base Rate: <span className={`font-semibold ${selectedCourt?.id === court.id ? 'text-white' : 'text-court-green'}`}>₹{court.baseRate}</span>
                                 </div>
                             </button>
                         ))}
@@ -388,27 +388,27 @@ function CourtsContent() {
 
                 {/* Weekly Availability Matrix */}
                 {selectedCourt && (
-                    <div className="glass-effect rounded-2xl p-3 sm:p-6 overflow-hidden">
+                    <div className="glass-effect rounded-2xl p-3 sm:p-6 overflow-hidden bg-white shadow-xl shadow-slate-200/50">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
-                                <h2 className="text-xl font-bold text-white">Availability Schedule</h2>
-                                <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-semibold flex items-center gap-1">
+                                <h2 className="text-xl font-bold text-slate-800">Availability Schedule</h2>
+                                <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold flex items-center gap-1">
                                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                                     Live
                                 </span>
                             </div>
                             <div className="flex items-center gap-4 text-sm">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/50"></div>
-                                    <span className="text-gray-400">Available</span>
+                                    <div className="w-3 h-3 rounded bg-green-100 border border-green-500/50"></div>
+                                    <span className="text-slate-500">Available</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded bg-red-500/20 border border-red-500/50"></div>
-                                    <span className="text-gray-400">Booked</span>
+                                    <div className="w-3 h-3 rounded bg-red-100 border border-red-500/50"></div>
+                                    <span className="text-slate-500">Booked</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded bg-gray-800 border border-gray-700"></div>
-                                    <span className="text-gray-400">Past/Unavailable</span>
+                                    <div className="w-3 h-3 rounded bg-slate-100 border border-slate-300"></div>
+                                    <span className="text-slate-500">Past/Unavailable</span>
                                 </div>
                             </div>
                         </div>
@@ -417,7 +417,7 @@ function CourtsContent() {
                             <table className="w-full border-collapse min-w-[500px] sm:min-w-[800px]">
                                 <thead>
                                     <tr>
-                                        <th className="p-2 sm:p-4 text-left text-gray-400 font-medium border-b border-white/10 sticky left-0 bg-[#0f172a] z-10 w-20 sm:w-24 text-xs sm:text-base">
+                                        <th className="p-2 sm:p-4 text-left text-slate-500 font-medium border-b border-slate-200 sticky left-0 bg-white z-10 w-20 sm:w-24 text-xs sm:text-base shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                                             Time
                                         </th>
                                         {[...selectedCourt.availability]
@@ -425,9 +425,9 @@ function CourtsContent() {
                                             .map((day, index) => {
                                                 const { day: d, weekday } = formatDate(day.date);
                                                 return (
-                                                    <th key={index} className="p-2 sm:p-4 text-center border-b border-white/10 min-w-[70px] sm:min-w-[120px]">
-                                                        <div className="text-purple-400 font-bold text-xs sm:text-base">{weekday}</div>
-                                                        <div className="text-lg sm:text-2xl text-white font-bold">{d}</div>
+                                                    <th key={index} className="p-2 sm:p-4 text-center border-b border-slate-200 min-w-[70px] sm:min-w-[120px]">
+                                                        <div className="text-court-green font-bold text-xs sm:text-base">{weekday}</div>
+                                                        <div className="text-lg sm:text-2xl text-slate-800 font-bold">{d}</div>
                                                     </th>
                                                 );
                                             })}
@@ -439,8 +439,8 @@ function CourtsContent() {
                                         const displayTime = new Date(`2000-01-01T${timeLabel}`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
                                         return (
-                                            <tr key={hour} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                                <td className="p-2 sm:p-4 text-gray-400 font-medium sticky left-0 bg-[#0f172a] z-10 border-r border-white/10 text-xs sm:text-base">
+                                            <tr key={hour} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                                <td className="p-2 sm:p-4 text-slate-500 font-medium sticky left-0 bg-white z-10 border-r border-slate-200 text-xs sm:text-base shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                                                     {displayTime}
                                                 </td>
                                                 {[...selectedCourt.availability]
@@ -458,31 +458,31 @@ function CourtsContent() {
                                                                         onClick={() => isAvailable && handleSlotSelect(slot, day.date)}
                                                                         disabled={!isAvailable}
                                                                         className={`relative w-full h-full min-h-[50px] sm:min-h-[80px] rounded-lg p-1 sm:p-2 flex flex-col items-center justify-center gap-1 transition-all ${isSlotSelected(slot, day.date)
-                                                                            ? 'bg-green-600/30 border-2 border-green-500 shadow-lg shadow-green-500/20 scale-105'
+                                                                            ? 'bg-green-700 border-2 border-green-700 shadow-lg shadow-green-200 scale-105 text-white'
                                                                             : isAvailable
-                                                                                ? 'bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 hover:scale-105 cursor-pointer'
+                                                                                ? 'bg-green-50 border border-green-200 hover:bg-green-100 hover:border-green-300 hover:scale-105 cursor-pointer text-court-deep'
                                                                                 : isBooked
-                                                                                    ? 'bg-red-500/10 border border-red-500/30 text-red-400 cursor-not-allowed'
-                                                                                    : 'bg-gray-800/50 border border-gray-700 text-gray-500 cursor-not-allowed'
+                                                                                    ? 'bg-red-50 border border-red-100 text-red-300 cursor-not-allowed'
+                                                                                    : 'bg-slate-100 border border-slate-200 text-slate-300 cursor-not-allowed'
                                                                             }`}
                                                                     >
                                                                         {isSlotSelected(slot, day.date) && (
-                                                                            <div className="absolute top-1 right-1 w-3 h-3 sm:w-5 sm:h-5 bg-green-500 rounded-full flex items-center justify-center">
-                                                                                <svg className="w-2 h-2 sm:w-3 sm:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <div className="absolute top-1 right-1 w-3 h-3 sm:w-5 sm:h-5 bg-white text-black rounded-full flex items-center justify-center">
+                                                                                <svg className="w-2 h-2 sm:w-3 sm:h-3 text-court-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                                                 </svg>
                                                                             </div>
                                                                         )}
-                                                                        <span className={`font-bold text-sm sm:text-base ${isSlotSelected(slot, day.date) ? 'text-green-300' : isAvailable ? 'text-cyan-400' : 'text-inherit'}`}>
+                                                                        <span className={`font-bold text-sm sm:text-base ${isSlotSelected(slot, day.date) ? 'text-white' : isAvailable ? 'text-court-deep' : 'text-inherit'}`}>
                                                                             ₹{slot.price}
                                                                         </span>
-                                                                        <span className="text-[8px] sm:text-[10px] uppercase font-bold tracking-wider">
+                                                                        <span className={`text-[8px] sm:text-[10px] uppercase font-bold tracking-wider ${isSlotSelected(slot, day.date) ? 'opacity-100' : 'opacity-80'}`}>
                                                                             {isSlotSelected(slot, day.date) ? 'Selected' : isBooked ? 'Booked' : isPast ? 'Closed' : 'Tap'}
                                                                         </span>
                                                                     </button>
                                                                 ) : (
-                                                                    <div className="w-full h-full min-h-[80px] rounded-lg bg-gray-900/50 border border-white/5 flex items-center justify-center">
-                                                                        <span className="text-gray-600">-</span>
+                                                                    <div className="w-full h-full min-h-[80px] rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center">
+                                                                        <span className="text-slate-300">-</span>
                                                                     </div>
                                                                 )}
                                                             </td>
@@ -498,42 +498,42 @@ function CourtsContent() {
                 )}
 
                 {!selectedCourt && courts.length === 0 && (
-                    <div className="glass-effect rounded-2xl p-12 flex flex-col items-center justify-center text-center">
-                        <svg className="w-20 h-20 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="glass-effect rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-white border border-slate-200">
+                        <svg className="w-20 h-20 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
-                        <h3 className="text-xl font-semibold text-white mb-2">No Courts Available</h3>
-                        <p className="text-gray-400">Please check back later</p>
+                        <h3 className="text-xl font-semibold text-slate-700 mb-2">No Courts Available</h3>
+                        <p className="text-slate-500">Please check back later</p>
                     </div>
                 )}
 
                 {/* Bottom Cart - Fixed */}
                 {selectedSlots.length > 0 && (
-                    <div className="fixed bottom-0 bg-white left-0 right-0 z-50">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-                            <div className="glass-effect rounded-2xl border-2 border-green-500 shadow-2xl shadow-green-500/20">
+                    <div className="fixed bottom-0 bg-white left-0 right-0 z-50 border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 pt-4">
+                            <div className="rounded-2xl border-2 border-green-600 bg-white shadow-lg">
                                 <button onClick={() => setShowCartDrawer(!showCartDrawer)} className="w-full p-4 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                                        <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
                                             {selectedSlots.length}
                                         </div>
-                                        <div className="text-left flex">
-                                            <div className="text-white font-semibold">
+                                        <div className="text-left flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                                            <div className="text-slate-900 font-semibold text-lg">
                                                 {selectedSlots.length} Slot{selectedSlots.length > 1 ? 's' : ''} Selected
                                             </div>
-                                            <div className="text-green-400 text-sm font-bold">
+                                            <div className="text-green-700 text-sm font-bold">
                                                 Total: ₹{getTotalPrice()}
                                             </div>
                                         </div>
                                     </div>
-                                    <svg className={`w-5 h-5 text-green-500 transition-transform ${showCartDrawer ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className={`w-5 h-5 text-green-600 transition-transform ${showCartDrawer ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                                     </svg>
                                 </button>
 
                                 {/* Cart Drawer Content */}
                                 {showCartDrawer && (
-                                    <div className="border-t border-white/10 p-4 max-h-[60vh] overflow-y-auto">
+                                    <div className="border-t border-green-200 p-4 max-h-[60vh] overflow-y-auto bg-white/50">
                                         <div className="space-y-2 mb-4">
                                             {selectedSlots.map((selectedSlot, index) => {
                                                 const formattedDate = formatDate(selectedSlot.date);
@@ -541,16 +541,16 @@ function CourtsContent() {
                                                 const displayTime = new Date(`2000-01-01T${selectedSlot.slot.startTime}`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
                                                 return (
-                                                    <div key={index} className="group bg-white/5 hover:bg-white/10 rounded-lg p-3 flex items-center justify-between transition">
+                                                    <div key={index} className="group bg-white rounded-lg p-3 flex items-center justify-between transition border border-slate-100 hover:border-court-green shadow-sm">
                                                         <div className="flex-1">
-                                                            <div className="font-semibold text-white">{selectedSlot.courtName}</div>
-                                                            <div className="text-sm text-gray-400">
+                                                            <div className="font-semibold text-slate-900">{selectedSlot.courtName}</div>
+                                                            <div className="text-sm text-slate-500">
                                                                 {formattedDate.weekday}, {formattedDate.day} {formattedDate.month} • {displayTime}
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-3">
-                                                            <div className="text-green-400 font-bold">₹{selectedSlot.price}</div>
-                                                            <button onClick={() => removeSlot(index)} className="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 transition">
+                                                            <div className="text-court-deep font-bold">₹{selectedSlot.price}</div>
+                                                            <button onClick={() => removeSlot(index)} className="opacity-0 group-hover:opacity-100 w-8 h-8 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-500 transition">
                                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                                                 </svg>
@@ -561,11 +561,11 @@ function CourtsContent() {
                                             })}
                                         </div>
 
-                                        <div className="flex gap-3 pt-4 border-t border-white/10">
-                                            <button onClick={() => setSelectedSlots([])} className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white transition">
+                                        <div className="flex gap-3 pt-4 border-t border-green-200">
+                                            <button onClick={() => setSelectedSlots([])} className="px-4 py-3 bg-white hover:bg-slate-50 border-2 border-slate-300 rounded-lg text-slate-900 font-semibold transition">
                                                 Clear All
                                             </button>
-                                            <button onClick={handleBulkCheckout} disabled={bookingLoading} className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold rounded-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <button onClick={handleBulkCheckout} disabled={bookingLoading} className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                                                 {bookingLoading ? 'Processing...' : `Proceed to Pay ₹${getTotalPrice()}`}
                                             </button>
                                         </div>
