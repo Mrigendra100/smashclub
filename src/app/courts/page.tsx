@@ -33,6 +33,9 @@ function CourtsContent() {
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const [selectedSlots, setSelectedSlots] = useState<SelectedSlot[]>([]);
     const [showCartDrawer, setShowCartDrawer] = useState(false);
+    const [reservationTimer, setReservationTimer] = useState<NodeJS.Timeout | null>(null);
+    const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
+    const [currentPaymentId, setCurrentPaymentId] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -120,6 +123,62 @@ function CourtsContent() {
         return selectedSlots.reduce((sum, slot) => sum + slot.price, 0);
     };
 
+    // Start reservation countdown timer
+    const startReservationTimer = async (paymentId: string) => {
+        setCurrentPaymentId(paymentId);
+        setRemainingSeconds(180); // 3 minutes
+
+        const intervalId = setInterval(async () => {
+            try {
+                const response = await bookingsApi.getReservationStatus(paymentId);
+                const status = response.data;
+
+                if (status.isActive) {
+                    setRemainingSeconds(status.remainingSeconds);
+                } else {
+                    // Reservation expired
+                    clearReservationTimer();
+                    setMessage({
+                        type: 'error',
+                        text: 'Your reservation has expired. Please select your slots again.'
+                    });
+                    setSelectedSlots([]);
+                }
+            } catch (error) {
+                console.error('Failed to check reservation status:', error);
+                clearReservationTimer();
+            }
+        }, 10000); // Poll every 10 seconds
+
+        setReservationTimer(intervalId);
+    };
+
+    // Clear reservation timer
+    const clearReservationTimer = () => {
+        if (reservationTimer) {
+            clearInterval(reservationTimer);
+            setReservationTimer(null);
+        }
+        setRemainingSeconds(0);
+        setCurrentPaymentId(null);
+    };
+
+    // Cleanup timer on unmount
+    useEffect(() => {
+        return () => {
+            if (reservationTimer) {
+                clearInterval(reservationTimer);
+            }
+        };
+    }, [reservationTimer]);
+
+    // Format remaining time
+    const formatTime = (seconds: number): string => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
     const handleBulkCheckout = async () => {
         if (selectedSlots.length === 0) return;
 
@@ -148,7 +207,10 @@ function CourtsContent() {
             // 1. Initiate Bulk Booking
             const response = await bookingsApi.bulkInitiate(bookingsData);
             console.log('Bulk Booking Response:', response.data);
-            const { order } = response.data;
+            const { order, paymentId } = response.data;
+
+            // Start reservation countdown timer
+            startReservationTimer(paymentId);
 
             // 2. Open Razorpay Checkout
             const options = {
@@ -160,6 +222,9 @@ function CourtsContent() {
                 order_id: order.id,
                 handler: async function (response: any) {
                     try {
+                        // Clear countdown timer on payment success
+                        clearReservationTimer();
+
                         // 3. Verify Payment
                         await bookingsApi.verify({
                             orderId: response.razorpay_order_id,
@@ -213,10 +278,34 @@ function CourtsContent() {
 
         } catch (error: any) {
             console.error('Bulk booking error:', error);
-            setMessage({
-                type: 'error',
-                text: error.response?.data?.message || 'Failed to initiate bulk booking.',
-            });
+
+            // Clear timer on error
+            clearReservationTimer();
+
+            // Enhanced error handling for reservation conflicts
+            const errorMessage = error.response?.data?.message || 'Failed to initiate bulk booking.';
+
+            if (errorMessage.includes('already booked or reserved')) {
+                setMessage({
+                    type: 'error',
+                    text: 'One or more slots are currently reserved by another user. Please try a different slot or wait a few minutes.',
+                });
+
+                // Auto-refresh availability after 3 minutes
+                setTimeout(() => {
+                    loadCourts();
+                    setMessage({
+                        type: 'success',
+                        text: 'Availability refreshed! You can try booking again.'
+                    });
+                }, 3 * 60 * 1000 + 5000); // 3 min + 5 sec buffer
+            } else {
+                setMessage({
+                    type: 'error',
+                    text: errorMessage,
+                });
+            }
+
             setBookingLoading(false);
         }
     };
@@ -524,6 +613,14 @@ function CourtsContent() {
                                             <div className="text-green-700 text-sm font-bold">
                                                 Total: ₹{getTotalPrice()}
                                             </div>
+                                            {remainingSeconds > 0 && (
+                                                <div className="text-amber-600 text-xs font-semibold flex items-center gap-1">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    {formatTime(remainingSeconds)} left
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <svg className={`w-5 h-5 text-green-600 transition-transform ${showCartDrawer ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -35,6 +35,12 @@ export const bookingsApi = {
     getAvailability: (courtId: string, date: string) =>
         api.get<AvailabilitySlot[]>(`/bookings/availability/${courtId}`, { params: { date } }),
     cancel: (id: string) => api.delete(`/bookings/${id}`),
+    getReservationStatus: (paymentId: string) => api.get<{
+        isActive: boolean;
+        status: string;
+        remainingSeconds: number;
+        expiresAt: string;
+    }>(`/bookings/reservation-status/${paymentId}`),
 };
 
 // Passes API
