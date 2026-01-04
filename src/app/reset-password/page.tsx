@@ -18,58 +18,97 @@ export default function ResetPasswordPage() {
     const router = useRouter();
     const supabase = createClient();
 
-    // Extract and verify tokens from URL hash on mount
+    // Extract and verify tokens from URL on mount
     useEffect(() => {
         const verifyResetToken = async () => {
             try {
-                // Check if we have hash parameters (tokens from email link)
+                // Debug: Log full URL
+                console.log('Full URL:', window.location.href);
+                console.log('Hash:', window.location.hash);
+                console.log('Search:', window.location.search);
+
+                // Check both hash and query parameters
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const queryParams = new URLSearchParams(window.location.search);
+
+                // Check for errors first
+                const error_code = hashParams.get('error_code') || queryParams.get('error_code');
+                const error_description = hashParams.get('error_description') || queryParams.get('error_description');
+
+                if (error_code || error_description) {
+                    console.error('Error in URL:', { error_code, error_description });
+                    setMessage({
+                        type: 'error',
+                        text: decodeURIComponent(error_description || 'An error occurred with the reset link.')
+                    });
+                    setTokenValid(false);
+                    setVerifyingToken(false);
+                    return;
+                }
+
+                // Check for access_token (hash fragment flow) or session
                 const accessToken = hashParams.get('access_token');
                 const refreshToken = hashParams.get('refresh_token');
                 const type = hashParams.get('type');
 
-                // If no tokens in URL, check if user already has a valid session
-                if (!accessToken || type !== 'recovery') {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session?.user) {
-                        // User has valid session, allow password update
-                        setTokenValid(true);
-                    } else {
-                        // No tokens and no session - invalid access
+                console.log('Hash params:', { hasAccessToken: !!accessToken, hasRefreshToken: !!refreshToken, type });
+
+                // If we have tokens in hash, use setSession
+                if (accessToken && refreshToken && type === 'recovery') {
+                    console.log('Using hash token flow with setSession...');
+                    const { data, error } = await supabase.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken
+                    });
+
+                    if (error) {
+                        console.error('SetSession error:', error);
                         setMessage({
                             type: 'error',
                             text: 'Invalid or expired password reset link. Please request a new one.'
                         });
                         setTokenValid(false);
+                    } else {
+                        console.log('Session established successfully');
+                        setTokenValid(true);
+                        window.history.replaceState(null, '', window.location.pathname);
                     }
                     setVerifyingToken(false);
                     return;
                 }
 
-                // Exchange the tokens to establish session
-                const { data, error } = await supabase.auth.setSession({
-                    access_token: accessToken,
-                    refresh_token: refreshToken!
-                });
+                // Check if Supabase already handled the auth (PKCE flow)
+                // When user clicks the email link, Supabase verifies and redirects with a session
+                console.log('Checking for existing session (PKCE flow)...');
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-                if (error) {
+                console.log('Session check:', { hasSession: !!session, error: sessionError?.message });
+
+                if (session?.user) {
+                    // User has valid session from PKCE flow
+                    console.log('Valid session found, user can reset password');
+                    setTokenValid(true);
+                } else {
+                    // No session - this means either:
+                    // 1. Direct access without clicking email link
+                    // 2. Token expired
+                    // 3. Redirect URL not properly configured
+                    console.log('No valid session found');
                     setMessage({
                         type: 'error',
                         text: 'Invalid or expired password reset link. Please request a new one.'
                     });
                     setTokenValid(false);
-                } else {
-                    setTokenValid(true);
-                    // Clean up URL hash for better UX
-                    window.history.replaceState(null, '', window.location.pathname);
                 }
+
+                setVerifyingToken(false);
             } catch (err: any) {
+                console.error('Error in verifyResetToken:', err);
                 setMessage({
                     type: 'error',
                     text: err.message || 'Failed to verify reset link'
                 });
                 setTokenValid(false);
-            } finally {
                 setVerifyingToken(false);
             }
         };
