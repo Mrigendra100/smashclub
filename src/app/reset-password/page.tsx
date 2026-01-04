@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
 
 export default function ResetPasswordPage() {
     const [password, setPassword] = useState('');
@@ -11,8 +12,70 @@ export default function ResetPasswordPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const [loading, setLoading] = useState(false);
+    const [verifyingToken, setVerifyingToken] = useState(true);
+    const [tokenValid, setTokenValid] = useState(false);
     const { updatePassword } = useAuth();
     const router = useRouter();
+    const supabase = createClient();
+
+    // Extract and verify tokens from URL hash on mount
+    useEffect(() => {
+        const verifyResetToken = async () => {
+            try {
+                // Check if we have hash parameters (tokens from email link)
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = hashParams.get('access_token');
+                const refreshToken = hashParams.get('refresh_token');
+                const type = hashParams.get('type');
+
+                // If no tokens in URL, check if user already has a valid session
+                if (!accessToken || type !== 'recovery') {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session?.user) {
+                        // User has valid session, allow password update
+                        setTokenValid(true);
+                    } else {
+                        // No tokens and no session - invalid access
+                        setMessage({
+                            type: 'error',
+                            text: 'Invalid or expired password reset link. Please request a new one.'
+                        });
+                        setTokenValid(false);
+                    }
+                    setVerifyingToken(false);
+                    return;
+                }
+
+                // Exchange the tokens to establish session
+                const { data, error } = await supabase.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: refreshToken!
+                });
+
+                if (error) {
+                    setMessage({
+                        type: 'error',
+                        text: 'Invalid or expired password reset link. Please request a new one.'
+                    });
+                    setTokenValid(false);
+                } else {
+                    setTokenValid(true);
+                    // Clean up URL hash for better UX
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
+            } catch (err: any) {
+                setMessage({
+                    type: 'error',
+                    text: err.message || 'Failed to verify reset link'
+                });
+                setTokenValid(false);
+            } finally {
+                setVerifyingToken(false);
+            }
+        };
+
+        verifyResetToken();
+    }, [supabase]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,6 +110,63 @@ export default function ResetPasswordPage() {
             setLoading(false);
         }
     };
+
+    // Show loading state while verifying token
+    if (verifyingToken) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-rich-white p-4">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-court-light/50 rounded-full blur-3xl opacity-60"></div>
+                    <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-court-light/50 rounded-full blur-3xl opacity-60"></div>
+                </div>
+                <div className="w-full max-w-md relative z-10">
+                    <div className="text-center mb-8">
+                        <h1 className="text-4xl font-bold text-court-deep mb-2">SmashClub</h1>
+                        <p className="text-slate-500">Verifying reset link...</p>
+                    </div>
+                    <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100">
+                        <div className="flex items-center justify-center py-8">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-court-green"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show error state if token is invalid
+    if (!tokenValid) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-rich-white p-4">
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-court-light/50 rounded-full blur-3xl opacity-60"></div>
+                    <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-court-light/50 rounded-full blur-3xl opacity-60"></div>
+                </div>
+                <div className="w-full max-w-md relative z-10">
+                    <div className="text-center mb-8">
+                        <h1 className="text-4xl font-bold text-court-deep mb-2">SmashClub</h1>
+                        <p className="text-slate-500">Password Reset</p>
+                    </div>
+                    <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100">
+                        {message && (
+                            <div className="border px-4 py-3 rounded-lg mb-4 bg-red-50 border-red-200 text-red-700">
+                                {message.text}
+                            </div>
+                        )}
+                        <p className="text-slate-600 text-center mb-4">
+                            Please request a new password reset link to continue.
+                        </p>
+                        <Link
+                            href="/login"
+                            className="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-green-500/20 text-center"
+                        >
+                            Back to Login
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-rich-white p-4">
